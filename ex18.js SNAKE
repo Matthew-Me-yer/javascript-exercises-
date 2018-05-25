@@ -1,0 +1,209 @@
+// WASD = Move || SHIFT / CTRL = ?
+
+//INDEX.JS
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>repl.it</title>
+    <link href="index.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <canvas id="snake" width="400" height="400"></canvas>
+    <script src="index.js"></script>
+  </body>
+</html>
+
+//INDEX.CSS
+
+//INDEX.JS
+window.onload=function(){
+  lives = 3;
+  canvas = document.getElementById("snake");
+  pen = canvas.getContext("2d");
+  pen.font = "30px Arial";
+  pen.strokeText("Hello World",10,50);
+  document.addEventListener("keydown",keyPush);
+  // Running fps 
+  setInterval(game,1000/15);
+};
+
+//define player x,y positions 
+player_x = 10;
+player_y = 10;
+//Grid 
+gridSize = 20;
+tileCount = 20;
+
+// Player Speed 
+x_speed = 0;
+y_speed = 0;
+
+// Point location 
+apple_x = 15;
+apple_y = 15;
+
+//used to store trail
+trail = [];
+//starting length 
+tail = 5; 
+
+
+// Game logic 
+function game(){
+  // Player position update 
+  player_x+=x_speed;
+  player_y+=y_speed;
+  
+  // update player
+  pen.fillStyle="lime";
+  
+  // detecting boundaries
+  if(player_x < 0) {
+    lives += -1;
+    player_x = tileCount -1;
+    }
+  if(player_x > tileCount - 1){
+    lives += -1;
+    player_x = 0;
+  }
+  if(player_y < 0) {
+    lives += -1;
+    player_y = tileCount - 1;
+  }
+  if(player_y > tileCount - 1) {
+    lives += -1;
+    player_y = 0;
+  }
+  
+  //create black background 
+  pen.fillStyle="black";
+  pen.fillRect(0,0,canvas.width,canvas.height);
+  
+  // change color of player 
+  pen.fillStyle="lime";
+  
+  for(var i=0;i<trail.length;i++){
+    pen.fillRect(trail[i].x*gridSize, trail[i].y*gridSize,gridSize,gridSize);
+    // detect if the player hits the trail
+    if (trail[i].x==player_x && trail[i].y==player_y) {
+      //set the snake to 5
+      tail=5;
+      if(x_speed !== 0 || y_speed !== 0){
+        lives -= 1;
+      }
+      
+    }
+  }
+  //adding player position
+  trail.push({x:player_x,y:player_y});
+  
+  //trimming tail
+  while(trail.length>tail) {
+    //this deletes first value
+    trail.shift();
+  }
+  
+  //detect apple collision
+  if(apple_x == player_x && apple_y == player_y) {
+    //add 1 to tail
+    tail++;
+    //move to random x y 
+    apple_x = Math.floor(Math.random()*tileCount);
+    apple_y = Math.floor(Math.random()*tileCount);
+  } 
+ 
+  // draw the apple 
+  pen.fillStyle="purple";
+  pen.fillRect(apple_x*gridSize,apple_y*gridSize,gridSize,gridSize);
+  
+  // Print lives
+  pen.fillStyle="red"
+  pen.fillText("Lives: " + lives,10,50); 
+
+
+//if(lives <= 0){
+  //pen.clearRect(0, 0, 400, 400);
+  //pen.fillStyle="red";
+  //pen.fillText("Game Over",130,180);
+  //}
+  
+  
+  
+  
+}
+
+
+
+function keyPush(evt){
+  switch(evt.keyCode){
+    case 65: //Left arrow
+      x_speed = -1; 
+      y_speed = 0;
+      break;
+    case 87: //up arrow, but down is up
+      x_speed = 0;
+      y_speed = -1;
+      break;
+    case 68: //Right arrow
+      x_speed = 1;
+      y_speed = 0;
+      break;
+    case 83: //down arrow
+      x_speed = 0;
+      y_speed = 1;
+      break; 
+    case 16: // Shift  
+      x_speed = 1;
+      y_speed = 1;
+      break;
+    case 17:
+      setInterval(game,1000/100);
+      break;
+    case 18:
+      setInterval(game,1000/15);
+      break;
+  }
+  if(x_speed == 1){
+    switch(evt.keyCode){
+      case 65:
+        x_speed = 1;
+        y_speed = 0;
+        break;
+    }
+  }
+  if(x_speed == -1){
+    switch(evt.keyCode){
+      case 68:
+        x_speed = -1;
+        y_speed = 0;
+        break;
+    }
+  }
+  if(y_speed == 1){
+    switch(evt.keyCode){
+    case 87:
+      x_speed = 0;
+      y_speed = 1;
+      
+      
+    }
+  }
+  if(y_speed == -1){
+    switch(evt.keyCode){
+      case 83:
+        x_speed = 0;
+        y_speed = -1;
+        break;
+   
+    }
+  }
+  
+  
+  
+  
+  
+  
+  //sssssssssssssssssssssssss
+}
